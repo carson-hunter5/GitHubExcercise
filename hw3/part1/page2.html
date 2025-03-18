@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1 style = "color:red; font-size: 24px;">The 15 Minute City</h2>
+
+
+    <button id = 'navigationButton'>Go Back</button>
+    <script>
+        const navigationButton = document.getElementById('navigationButton')
+        navigationButton.addEventListener('click', function(){
+            window.location.href = 'index.html';
+        }
+
+        )
+    </script>
+
+    <p id = 'main'> The 15 Minute City refers to a new philosophy in urban design advocating for cities to be built in a manner
+        that allows residents to access most daily essentials in 15 minutes, without a car. This incentivizes more trips being taken
+        with sustainable modes of transportation, including walking, biking, or using public transportation. This introduces benefits
+        like:
+    </p>
+    <ul class = "A">
+        <li>Healthier Cities- residents using more active modes of transit means more time spent getting excercise rather
+            than sitting in cars. This is shown to have drastic benefits on mental and phsyical health. It would also reduce pollution,
+            reducing respiratory problems.
+        </li>
+        <li>Better Environment - Cars contribute significantly to greenhouse gas emmisions every year. More utilization of sustainable
+            modes of transit would cut these emmisions immensely. 
+        </li>
+        <li>Quality of Life - Walkable cities allow residents to not have to worry about the hassle of maintaining, fueling, and parking
+            a personal vehicle every day. People also get to engage with their cities at a personal level rather than through metal boxes.  </li>
+    </ul>
+
+    
+</body>
+</html>

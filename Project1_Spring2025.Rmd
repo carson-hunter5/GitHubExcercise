@@ -1,0 +1,241 @@
+---
+title: "Project1_Spring2025"
+author: "Your Name Here"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instructions
+
+Complete the project by filling in your code and the corresponding interpretation of its output.
+Turn in your file on Canvas as a knitted HTML file. 
+
+  * **Include brief comments to annotate your code. Uncommented code will be deducted by 20%**
+  * **Print the output of final calculations for each question** 
+  
+## Background: 
+
+Young people report feeling like their elected representatives are out of touch with their needs. Could this be because politicians are from a different generation? Has the age of distribution of elected officials actually changed in recent years? In this project, you will look at how the fraction of elderly (age over 70) members of Congress has changed since 1950. 
+
+The data analytics website FiveThirtyEight compiled a dataset of the age of every member of Congress at the start of each new congressional session (every 2 years). Install the package "fivethirtyeight" and read in the dataset using the instructions below:
+
+```{r}
+# Before beginning this project, you need to download the package called fivethirtyeight in order to access the data. Uncomment the following line of code and run it ONCE. Then, comment it out again. The document will not knit if you leave it uncommented!
+# install.packages("fivethirtyeight")
+# install.packages('fivethirtyeightdata', repos =
+# https://fivethirtyeightdata.github.io/drat/', type = 'source')
+# Load the library after you installed the package above
+library(fivethirtyeight)
+
+# Read in the dataset containing the age of every member of Congress when they began each new congressional session. The dataset goes back to 1947. 
+age <- congress_age
+# We have added another column for the year that the congressional session started 
+age$year <- as.numeric(format(as.POSIXct(age$termstart), "%Y"))
+
+```
+
+## Task 1: Visualize Ages of Congressional Ages Since 1950. (10 points)
+A first step in any analysis is to visualize the data. We will first examine the overall distribution of ages for Democratic and Republican members of the two chambers. 
+
+### Question 1: (2 points)
+This dataset contains more information that you need for your analysis. Create a new dataset that only contains the following information: the columns for chamber, party affiliation, age, and year. Keep only observations that occur in 1950 and later. 
+Use any function you wish to determine how many observations remain. 
+
+```{r}
+# conditional filtering of age dataset
+age <- age[age$year >= 1950, c('chamber','party','age', 'year')]
+```
+
+### Question 2: (1 point)
+You will do two separate analyses: one for the Senate and one for the House of Representatives. Create two separate datasets that correspond to the Senate and the House. Make sure to draw from the data you generated in Question 1. 
+
+```{r}
+# splitting house and senate
+senate.age <- age[age$chamber == 'senate', ]
+house.age <- age[age$chamber == 'house', ]
+```
+
+### Question 3: (2 points)
+Calculate the mean age at the start of congressional sessions for Democrats and Republicans in each of the 2 chambers. Print these 4 values. 
+
+```{r}
+# calculating means and outputting them with paste() command 
+mean.senate <- mean(senate.age$age)
+mean.house<- mean(house.age$age)
+print(paste('Mean senate age:',mean.senate))
+print(paste('Mean house age:', mean.house))
+```
+
+### Question 4: (4 points)
+Create a two panel figure with overlaid histograms of the age of Democratic and Republican members in each chamber of Congress. Panels should be oriented vertically, such that panel 1 is above panel 2. Panel 1 should show the ages of Democrats and Republicans in the Senate and panel 2 should show the ages of Democrats and Republicans in the House. Follow these additional instructions:
+
+  * All 4 datasets have the same bin breaks that are appropriate for the data
+  * The two panels should have the same x limits as to be able to compare the graphs easily 
+  * Include one legend somewhere in the figure 
+  * Include appropriate axis labels and titles 
+  * Make sure all data are visible 
+
+** Make sure your graphic renders correctly when you knit the document. If your figure is not displaying correctly, you may need to adjust the fig.height and fig.width arguments in the setup of the r chunk **
+
+```{r, fig.height= 8, fig.width = 6}
+# filtering senate and house age tables by party 
+senate.age.r <- senate.age[senate.age$party == 'R', ]
+senate.age.d <- senate.age[senate.age$party == 'D', ]
+house.age.r <- house.age[house.age$party == 'R', ]
+house.age.d <- house.age[house.age$party == 'D', ]
+
+
+# plotting
+hist(senate.age.r$age, 
+     main = "Distribution of Ages in Senate", 
+     xlab = "Age",
+     col = adjustcolor("red", alpha.f = .4),
+     ylim = c(0,320))
+
+
+hist(senate.age.d$age, 
+     col = adjustcolor("blue",alpha.f = .4),
+     add = T)
+
+legend("topleft", 
+       legend = c("Republican", "Democrat"), 
+       col = c(adjustcolor("red", alpha.f = .4), adjustcolor("blue", alpha.f = .4) ), 
+       pch = 15)
+
+hist(house.age.r$age, 
+     main = "Distribution of Ages in House", 
+     xlab = "Age",
+     col = adjustcolor("red", alpha.f = .4),
+     ylim = c(0,1800))
+
+hist(house.age.d$age, 
+     col = adjustcolor("blue",alpha.f = .4),
+     add = T)
+
+legend("topleft", 
+       legend = c("Republican", "Democrat"), 
+       col = c(adjustcolor("red", alpha.f = .4), adjustcolor("blue", alpha.f = .4) ), 
+       pch = 15)
+```
+
+### Question 5: (1 point)
+From your calculations and the plots, is there a difference in the ages of Democrats versus Republicans? Is there a difference in the ages of Senate vs. House members? You are not expected to conduct a statistical test for this question; simply interpret the data. 
+
+YOUR ANSWER: 
+
+Senate members seem to have higher ages on average than house members. Repulicans 
+seem to be slightly younger than Democrats.
+
+## Task 2: Calculate and Plot Fraction of Elderly Congress Members. (8 points)
+Your specific research question will study how the fraction of elderly (over the age of 70) members of Congress has changed over time. To do this, you will calculate the fraction of elderly members for each starting year. You will do this calculation for both chambers. 
+
+### Question 1: (2 points)
+Begin by creating a custom function to calculate the fraction of entries that are over 70 within a vector. 
+```{r}
+# creating function to calculate members > 70
+prop70 <- function(vector){
+  prop.over <- sum(vector > 70) / length(vector)
+  return(prop.over)
+}
+
+```
+
+### Question 2: (2 points)
+Use your custom function to calculate the fraction of members over 70 for each year. Perform this task for both the Senate dataset and the House dataset. Recall that you performed a similar analysis in your second lab! 
+```{r}
+# using function with aggregate to get proportions
+prop.70.chamber <- aggregate(age ~ year + chamber, FUN = prop70, data = age)
+prop.70.house <- prop.70.chamber[prop.70.chamber$chamber == "house", ]
+prop.70.senate <- prop.70.chamber[prop.70.chamber$chamber == "senate", ]
+```
+
+### Question 3: (4 points)
+Visualize these data in a plot showing the proportion of elderly members of each chamber over time. The x-axis should show the year the congressional session started, and the y-axis should show the fraction of the chamber that is over 70 years old. Show both datasets on the same plot. Follow these additional instructions: 
+
+  * Use two different colors for the house and the senate (not red and blue!)
+  * Include a legend 
+  * Make sure all data are visible 
+  * Include informative axis labels 
+  * Use both points and lines to display the data 
+
+```{r}
+plot(prop.70.house$year, prop.70.house$age, 
+     type = "b", 
+     lwd = 1.5, 
+     col = "purple", 
+     xlab = "Year", 
+     ylab = "Proportion > 70", 
+     ylim = c(0, .25))
+
+points(prop.70.senate$year, prop.70.senate$age, 
+     type = "b", 
+     lwd = 1.5,
+     col = "blue")
+
+# Finally, we need a legend to distinguish the two datasets
+legend("topleft", 
+       legend = c("House", "Senate"), 
+       col = c("purple", "blue"), 
+       lwd = 1.5)
+```
+)
+
+
+## Task 3: Test for Changes in the Rate of Elder Membership. (8 points) 
+Although a visual representation of the data is helpful, you move on to quantitatively testing whether the demographics of Congress have changed in recent years. This is your approach: you will calculate the baseline rate of elderly participation in each chamber by calculating the average fraction of elderly members between 1950 and 2000. You will then test whether the number of elderly members in the most recent Congress differs from this historical baseline. 
+
+### Question 1: (2 points)
+Begin by finding the historic baseline rate of elderly members of each chamber: 
+Calculate and print the fraction of members over 70 in the Senate from 1950 to 2000. 
+Calculate and print the fraction of members of 70 in the House from 1950 to 2000. 
+
+```{r}
+# calculating proportions over 5 decades 
+members.1950.2000.senate <- age[age$year >= 1950 & age$year <= 2000 & age$chamber == 'senate', ]
+members.1950.2000.house <- age[age$year >= 1950 & age$year <= 2000 & age$chamber == 'house', ]
+members.over.70.senate <- members.1950.2000.senate[members.1950.2000.senate$age >= 70, ]
+members.over.70.house <- members.1950.2000.house[members.1950.2000.house$age >= 70, ]
+prop.over.70.house <- nrow(members.over.70.house)/nrow(members.1950.2000.house)
+prop.over.70.senate <- nrow(members.over.70.senate)/nrow(members.1950.2000.senate)
+print(prop.over.70.house)
+print(prop.over.70.senate)
+```
+
+### Question 2: (2 points)
+To evaluate whether the demographics of the most recent Congress line up with the historical baseline, calculate the following information about the 2013 Congress:
+Find the **number** of House members serving in the 2013 Congress. Do the same for the Senate.
+Find the **number** of House members serving in the 2013 Congress AND who were over 70. Do the same for the Senate. 
+
+```{r}
+# calculating proportions 2013
+members.house.2013 <- nrow(age[age$chamber == 'house' & age$year == 2013, ])
+members.senate.2013 <- nrow(age[age$chamber == 'senate' & age$year == 2013, ])
+senate.2013.o70 <- nrow(age[age$chamber == 'house' & age$year == 2013 & age$age >= 70, ])
+house.2013.o70 <- nrow(age[age$chamber == 'senate' & age$year == 2013 & age$age >= 70, ])
+```
+
+### Question 3: (2 points)
+Implement the appropriate binomial tests using the function binom.test() for these null and alternate hypotheses:
+H0: The probability of a member of congress being 70 years or older in the 2013 Congress is unchanged from the historic probability. 
+Ha: The probability of a member of congress being 70 years or older in the 2013 Congress is different from the historic probability. 
+
+Run one test for the House and one test for the Senate. 
+
+```{r}
+binom.test(senate.2013.o70, members.senate.2013, prop.over.70.senate)
+binom.test(house.2013.o70, members.house.2013, prop.over.70.house)
+
+```
+
+### Question 4: (2 points)
+Interpret the results of your analyses. (1 point)
+What can you conclude about the fraction of elderly members of Congress in recent years? (1 point)
+
+YOUR ANSWER: 
+
+The fraction of elderly members in Congress in 2013 is significantly different 
+than the historical proportion of elderly members. 
+

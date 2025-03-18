@@ -1,0 +1,20 @@
+h1 {
+    text-align: left;
+}
+
+p {
+    width: 800px;
+    margin: 0.5 auto;
+}
+
+#main {
+    color: rgb(162, 9, 147);
+    background-color: yellow;
+    width: 500px;
+}
+
+.A {
+    border: 5px solid rgb(2, 114, 45);
+    padding: 20px 20px 20px 20px;
+    background-color: rgb(12, 239, 243);
+}
